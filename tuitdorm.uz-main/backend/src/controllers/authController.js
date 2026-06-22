@@ -76,4 +76,37 @@ const adminUpdatePassword = async (req, res) => {
   }
 };
 
-module.exports = { login, getProfile, updatePassword, adminUpdatePassword };
+const resetPassword = async (req, res) => {
+  try {
+    const { username, newPassword, secretKey } = req.body;
+    
+    if (!process.env.RESET_SECRET_KEY) {
+      return res.status(500).json({ message: 'Serverda kalit sozlanmagan' });
+    }
+    
+    if (secretKey !== process.env.RESET_SECRET_KEY) {
+      return res.status(401).json({ message: 'Maxfiy kalit noto\'g\'ri' });
+    }
+    
+    if (!username || !newPassword) {
+      return res.status(400).json({ message: 'Login va yangi parol majburiy' });
+    }
+    
+    const userResult = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ message: 'Foydalanuvchi topilmadi' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    
+    await pool.query('UPDATE users SET password = $1, updated_at = NOW() WHERE username = $2', [hashedPassword, username]);
+    
+    res.json({ message: 'Parol muvaffaqiyatli yangilandi' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server xatosi' });
+  }
+};
+
+module.exports = { login, getProfile, updatePassword, adminUpdatePassword, resetPassword };

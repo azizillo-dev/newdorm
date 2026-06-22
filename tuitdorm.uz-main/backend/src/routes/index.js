@@ -22,6 +22,7 @@ router.get('/public/stats', async (req, res) => {
 });
 
 router.post('/auth/login', authCtrl.login);
+router.post('/auth/reset-password', authCtrl.resetPassword);
 router.get('/auth/profile', auth, authCtrl.getProfile);
 router.put('/auth/password', auth, authCtrl.updatePassword);
 router.put('/auth/admin-password', auth, requireRole('superadmin'), authCtrl.adminUpdatePassword);

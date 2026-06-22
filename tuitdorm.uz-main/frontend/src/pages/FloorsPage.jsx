@@ -38,11 +38,12 @@ export default function FloorsPage() {
   const handleSave = async () => {
     if (!form.floor_number || !form.name) { toast.error('Qavat raqami va nomi majburiy'); return; }
     try {
+      const payload = { ...form, sardor_id: form.sardor_id || null };
       if (modal === 'add') {
-        await api.post('/floors', form);
+        await api.post('/floors', payload);
         toast.success('Qavat qo\'shildi. Xonalar avtomatik yaratildi.');
       } else {
-        await api.put(`/floors/${selected.id}`, form);
+        await api.put(`/floors/${selected.id}`, payload);
         toast.success('Yangilandi');
       }
       load();

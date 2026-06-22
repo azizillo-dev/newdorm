@@ -50,7 +50,7 @@ const updateFloor = async (req, res) => {
     const { name, sardor_id } = req.body;
     const result = await pool.query(
       'UPDATE floors SET name = $1, sardor_id = $2 WHERE id = $3 RETURNING *',
-      [name, sardor_id, id]
+      [name, sardor_id || null, id]
     );
     res.json(result.rows[0]);
   } catch (err) {

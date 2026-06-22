@@ -14,6 +14,8 @@ import HolidaysPage from './pages/HolidaysPage';
 import SettingsPage from './pages/SettingsPage';
 import TrashPage from './pages/TrashPage';
 
+import LandingPage from './pages/LandingPage';
+
 const ProtectedRoute = ({ children, roles }) => {
   const { user, token } = useAuthStore();
   if (!token || !user) return <Navigate to="/login" replace />;
@@ -37,8 +39,8 @@ export default function App() {
         error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
       }} />
       <Routes>
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<ProtectedRoute><Layout><DashboardPage /></Layout></ProtectedRoute>} />
         <Route path="/attendance" element={<ProtectedRoute><Layout><AttendancePage /></Layout></ProtectedRoute>} />
         <Route path="/students" element={<ProtectedRoute><Layout><StudentsPage /></Layout></ProtectedRoute>} />
@@ -49,7 +51,7 @@ export default function App() {
         <Route path="/trash" element={<ProtectedRoute roles={['superadmin', 'sardor']}><Layout><TrashPage /></Layout></ProtectedRoute>} />
         <Route path="/holidays" element={<ProtectedRoute roles={['superadmin']}><Layout><HolidaysPage /></Layout></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><Layout><SettingsPage /></Layout></ProtectedRoute>} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

@@ -2,11 +2,15 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, LogIn, Building2, Shield } from 'lucide-react';
 import useAuthStore from '../store/authStore';
+import api from '../utils/api';
 import toast from 'react-hot-toast';
 
 export default function LoginPage() {
   const [form, setForm] = useState({ username: '', password: '' });
   const [showPass, setShowPass] = useState(false);
+  const [resetModal, setResetModal] = useState(false);
+  const [resetForm, setResetForm] = useState({ username: '', newPassword: '', secretKey: '' });
+  const [resetLoading, setResetLoading] = useState(false);
   const { login, loading } = useAuthStore();
   const navigate = useNavigate();
 
@@ -25,12 +29,29 @@ export default function LoginPage() {
     }
   };
 
+  const handleResetPassword = async () => {
+    if (!resetForm.username || !resetForm.newPassword || !resetForm.secretKey) {
+      toast.error('Barcha maydonlarni to\'ldiring');
+      return;
+    }
+    setResetLoading(true);
+    try {
+      const res = await api.post('/auth/reset-password', resetForm);
+      toast.success(res.data.message);
+      setResetModal(false);
+      setResetForm({ username: '', newPassword: '', secretKey: '' });
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Xato yuz berdi');
+    }
+    setResetLoading(false);
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-[#080c1a]">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
       {/* Animated background */}
-      <div className="bg-blob w-96 h-96 bg-blue-600 top-[-100px] left-[-100px]" style={{ animationDelay: '0s' }} />
-      <div className="bg-blob w-80 h-80 bg-indigo-500 bottom-[-80px] right-[-80px]" style={{ animationDelay: '2s' }} />
-      <div className="bg-blob w-64 h-64 bg-cyan-500 top-1/2 left-1/2" style={{ animationDelay: '4s', opacity: 0.08 }} />
+      <div className="hidden md:block bg-blob w-96 h-96 bg-blue-600 top-[-100px] left-[-100px]" style={{ animationDelay: '0s' }} />
+      <div className="hidden md:block bg-blob w-80 h-80 bg-indigo-500 bottom-[-80px] right-[-80px]" style={{ animationDelay: '2s' }} />
+      <div className="hidden md:block bg-blob w-64 h-64 bg-cyan-500 top-1/2 left-1/2" style={{ animationDelay: '4s', opacity: 0.08 }} />
 
       {/* Grid overlay */}
       <div className="absolute inset-0 opacity-[0.03]"
@@ -93,6 +114,16 @@ export default function LoginPage() {
               </div>
             </div>
 
+            <div className="flex justify-end">
+              <button 
+                type="button" 
+                onClick={() => setResetModal(true)}
+                className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+              >
+                Parolni unutdingizmi?
+              </button>
+            </div>
+
             <button
               type="submit"
               disabled={loading}
@@ -114,6 +145,32 @@ export default function LoginPage() {
             <span className="text-xs text-slate-500">Tizim faol ishlayapti</span>
           </div>
         </div>
+
+        {resetModal && (
+          <div className="modal-overlay" onClick={() => setResetModal(false)}>
+            <div className="modal-content p-6 max-w-sm" onClick={e => e.stopPropagation()}>
+              <h3 className="font-display font-semibold text-white text-lg mb-4">Parolni tiklash</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1.5">Login</label>
+                  <input type="text" value={resetForm.username} onChange={e => setResetForm({...resetForm, username: e.target.value})} placeholder="admin" className="glass-input w-full px-3 py-2 text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1.5">Yangi parol</label>
+                  <input type="password" value={resetForm.newPassword} onChange={e => setResetForm({...resetForm, newPassword: e.target.value})} placeholder="Yangi parol" className="glass-input w-full px-3 py-2 text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1.5">Maxfiy kalit (Secret Key)</label>
+                  <input type="password" value={resetForm.secretKey} onChange={e => setResetForm({...resetForm, secretKey: e.target.value})} placeholder="Kalitni kiriting" className="glass-input w-full px-3 py-2 text-sm" />
+                </div>
+                <div className="flex gap-3 pt-2">
+                  <button onClick={() => setResetModal(false)} className="btn-ghost flex-1 py-2 text-sm">Bekor</button>
+                  <button onClick={handleResetPassword} disabled={resetLoading} className="btn-primary flex-1 py-2 text-sm">Tiklash</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <p className="text-center text-slate-600 text-xs mt-6">
           © 2026 TATU Yotoqxona • Barcha huquqlar himoyalangan

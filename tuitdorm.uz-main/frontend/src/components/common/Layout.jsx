@@ -185,9 +185,9 @@ export default function Layout({ children }) {
   );
 
   return (
-    <div className="min-h-screen flex bg-[#080c1a] relative">
-      <div className="bg-blob w-[600px] h-[600px] bg-blue-900 top-0 left-0 opacity-10" />
-      <div className="bg-blob w-[400px] h-[400px] bg-indigo-900 bottom-0 right-0 opacity-10" style={{ animationDelay: '3s' }} />
+    <div className="min-h-screen flex relative">
+      <div className="hidden md:block bg-blob w-[600px] h-[600px] bg-blue-900 top-0 left-0 opacity-10" />
+      <div className="hidden md:block bg-blob w-[400px] h-[400px] bg-indigo-900 bottom-0 right-0 opacity-10" style={{ animationDelay: '3s' }} />
 
       <aside className="hidden lg:flex flex-col w-64 flex-shrink-0 relative z-20 sticky top-0 h-screen"
         style={{ borderRight: '1px solid rgba(255,255,255,0.06)', background: 'rgba(8,12,26,0.8)', backdropFilter: 'blur(20px)' }}>
