@@ -1,8 +1,16 @@
 import { create } from 'zustand';
 import api from '../utils/api';
 
+const getSafeUser = () => {
+  try {
+    const val = localStorage.getItem('user');
+    if (!val || val === 'undefined') return null;
+    return JSON.parse(val);
+  } catch(e) { return null; }
+};
+
 const useAuthStore = create((set) => ({
-  user: JSON.parse(localStorage.getItem('user') || 'null'),
+  user: getSafeUser(),
   token: localStorage.getItem('token') || null,
   loading: false,
 
